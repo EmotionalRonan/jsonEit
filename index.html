@@ -1,150 +1,140 @@
-<html>
+
+<!DOCTYPE HTML>
+
+<html manifest="/cache.manifest">
 <head>
-<script src="https://www.gstatic.com/firebasejs/3.6.5/firebase.js"></script>
-<title>ZeroToApp</title>
-<style>
-  #messages { width: 40em; border: 1px solid grey; min-height: 20em; }
-  #messages img { max-width: 240px; max-height: 160px; display: block; }
-  #header { position: fixed; top: 0; background-color: white; }
-  .push { margin-bottom: 2em; }
-  @keyframes yellow-fade { 0% {background: #f2f2b8;} 100% {background: none;} }
-  .highlight { -webkit-animation: yellow-fade 2s ease-in 1; animation: yellow-fade 2s ease-in 1; }
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-  // Step 0: HTML defined, variables for elements
-  var messagesList = document.getElementById('messages'),
-      textInput = document.getElementById('text'),
-      sendButton = document.getElementById('send'),
-      login = document.getElementById('login'),
-      googleLogin = document.getElementById('google'),
-      facebookLogin = document.getElementById('facebook'),
-      signedIn = document.getElementById('loggedin'),
-      logout = document.getElementById('logout'),
-      usernameElm = document.getElementById('username'),
-      password = document.getElementById('password'),
-      username = "Web";
-  var config = {
-    apiKey: "AIzaSyCol1UUWsF4m0TTI_VS9xGSsGxYGRIkntc",
-    authDomain: "chatapp-4399c.firebaseapp.com",
-    databaseURL: "https://chatapp-4399c.firebaseio.com",
-    storageBucket: "chatapp-4399c.appspot.com",
-    messagingSenderId: "831275567602"
-  };
-  
-  // Get the Firebase app and all primitives we'll use
-  var app = firebase.initializeApp(config),
-      database = app.database(),
-      auth = app.auth(),
-      storage = app.storage();
-      
-  var databaseRef = database.ref().child('chat');
-  sendButton.addEventListener('click', function(evt) {
-    var chat = { name: username, message: textInput.value };
-    databaseRef.push().set(chat);
-    textInput.value = '';
-  });
-  // Listen for when child nodes get added to the collection
-  databaseRef.on('child_added', function(snapshot) {
-    // Get the chat message from the snapshot and add it to the UI
-    var chat = snapshot.val();
-    addMessage(chat);
-  });
-  
-  // Show a popup when the user asks to sign in with Google
-  googleLogin.addEventListener('click', function(e) {
-    auth.signInWithPopup(new firebase.auth.GoogleAuthProvider());
-  });
-  // Allow the user to sign out
-  logout.addEventListener('click', function(e) {
-    auth.signOut();
-  });
-  // When the user signs in or out, update the username we keep for them
-  auth.onAuthStateChanged(function(user) {
-    if (user) {
-      setUsername(user.displayName);
-    }
-    else {
-      // User signed out, set a default username
-      setUsername("Web");
-    }
-  });
-  
-  function handleFileSelect(e) {
-    var file = e.target.files[0];
-    // Get a reference to the location where we'll store our photos
-    var storageRef = storage.ref().child('chat_photos');
-    
-    // Get a reference to store file at photos/<FILENAME>.jpg
-    var photoRef = storageRef.child(file.name);
-    // Upload file to Firebase Storage
-    var uploadTask = photoRef.put(file);
-    uploadTask.on('state_changed', null, null, function() {
-      // When the image has successfully uploaded, we get its download URL
-      var downloadUrl = uploadTask.snapshot.downloadURL;
-      // Set the download URL to the message box, so that the user can send it to the database
-      textInput.value = downloadUrl;
-    });
-  }
-  file.addEventListener('change', handleFileSelect, false);
-  function setUsername(newUsername) {
-    if (newUsername == null) {
-        newUsername = "Web";
-    }
-    console.log(newUsername);
-    username = newUsername;
-    var isLoggedIn = username != 'Web';
-    usernameElm.innerText = newUsername;
-    logout.style.display = isLoggedIn ? '' : 'none';
-    facebookLogin.style.display = isLoggedIn ? 'none' : '';
-    googleLogin.style.display = isLoggedIn ? 'none' : '';
-  }
-  function addMessage(chat) {
-    var li = document.createElement('li');
-    var nameElm = document.createElement('h4');
-    nameElm.innerText = chat.name;
-    li.appendChild(nameElm);
-    li.className = 'highlight';
-    if ( chat.message.indexOf("https://firebasestorage.googleapis.com/") == 0
-      || chat.message.indexOf("https://lh3.googleusercontent.com/") == 0
-      || chat.message.indexOf("http://pbs.twimg.com/") == 0
-      || chat.message.indexOf("data:image/") == 0) {
-      var imgElm = document.createElement("img");
-      imgElm.src = chat.message;
-      li.appendChild(imgElm);
-    }
-    else {
-      var messageElm = document.createElement("span");
-      messageElm.innerText = chat.message;
-      li.appendChild(messageElm);
-    }
-    messagesList.appendChild(li);
-    li.scrollIntoView(false);
-    sendButton.scrollIntoView(false);
-  }
-  //window.app = app; // NOTE: just for debugging
-  //for (var i=0; i < 10; i++) addMessage({ name: "Web", message: ''+i });
-  setUsername('Web');
-});
-</script>
+  <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+
+  <title>JSON Editor </title>
+
+  <meta name="description" content="JSON Editor Online is a web-based tool to view, edit, and format JSON. It shows your data side by side in a clear, editable treeview and in a code editor.">
+  <meta name="keywords" content="json, editor, formatter, online, format, parser, json editor, json editor online, online json editor, javascript, javascript object notation, tools, tool, json tools, treeview, open source, free, json parser, json parser online, json formatter, json formatter online, online json formatter, online json parser, format json online">
+  <meta name="author" content="Jos de Jong">
+
+  <link rel="shortcut icon" href="favicon.ico">
+
+  <link rel="stylesheet" type="text/css" href="app-min.css"> 
+  <link rel="stylesheet" type="text/css" href="jsoneditor.min.css">
+  <!-- TODO: droid font
+      <link href='http://fonts.googleapis.com/css?family=Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+  -->
+
+  <script type="text/javascript" src="jsoneditor.min.js"></script>
+  <script type="text/javascript" src="asset/ace/ace.js"></script>
+   <script type="text/javascript" src="app-min.js"></script> 
 </head>
+
 <body>
-  <div id='header'>
-    <label for='username'><img src="https://www.gstatic.com/images/icons/material/system/1x/account_box_black_24dp.png" width="24"/></label>
-    <span id='username'></span>
-    <span id='login'>
-      <button id='google' class='idp-button'>Sign in with Google</button>
-      <button id='facebook' class='idp-button'>Sign in with Facebook</button>
-    </span>
-    <button id='logout' class='idp-button'>Sign out</button>
+
+<div id="header">
+
+  <div id="menu">
+    <ul>
+      <li>
+        <a id="clear" title="Clear contents">Clear</a>
+      </li>
+      <li>
+        <a id="open" title="Open file from disk">
+          Open
+                    <span id="openMenuButton" title="Open file from disk or url">
+                    &#x25BC;
+                    </span>
+        </a>
+        <ul id="openMenu">
+          <li>
+            <a id="menuOpenFile" title="Open file from disk">Open&nbsp;file</a>
+          </li>
+          <li>
+            <a id="menuOpenUrl" title="Open file from url">Open&nbsp;url</a>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a id="save" title="Save file to disk">Save</a>
+      </li>
+    </ul>
   </div>
-  <div class="push"></div>
-  <ul id='messages'></ul>
-  <div id='footer'>
-    <img src="https://www.gstatic.com/images/icons/material/system/1x/add_a_photo_black_24dp.png" width="24"/>
-    <input type="file" id="file" name="file" />
-    <input id='text'></input>
-    <button id='send'>Send</button>
+
+  <!-- TODO: info, links, faq -->
+  <!--
+<div class="info" style="display:none;">
+  JSON, or JavaScript Object Notation, is a lightweight text-based open standard
+  designed for human-readable data interchange. It is derived from the JavaScript
+  scripting language for representing simple data structures and associative arrays,
+  called objects. Despite its relationship to JavaScript, it is language-independent,
+  with parsers available for most languages.
+  The JSON format was originally specified by Douglas Crockford, and is described
+  in RFC 4627. The official Internet media type for JSON is application/json.
+  The JSON filename extension is .json.
+  The JSON format is often used for serializing and transmitting structured data
+  over a network connection. It is used primarily to transmit data between a server
+  and web application, serving as an alternative to XML.
+  <br><br>
+  From <a target="_blank" href="http://en.wikipedia.org/wiki/Json">Wikipedia</a>
+</div>
+
+<div class="links" style="display:none;">
+  <a target="_blank" href="http://json.org/">http://json.org/</a><br>
+  <a target="_blank" href="http://en.wikipedia.org/wiki/Json">http://en.wikipedia.org/wiki/Json</a><br>
+</div>
+
+<div class="faq" style="display:none;"></div>
+  -->
+</div>
+
+<div id="auto">
+  <div id="contents">
+    <div id="codeEditor"></div>
+
+    <div id="splitter">
+      <div id="buttons">
+        <div>
+          <button id="toTree" class="convert" title="Copy code to tree editor">
+            <div class="convert-right"></div>
+          </button>
+        </div>
+        <div>
+          <button id="toCode" class="convert" title="Copy tree to code editor">
+            <div class="convert-left"></div>
+          </button>
+        </div>
+      </div>
+      <div id="drag">
+      </div>
+    </div>
+
+    <div id="treeEditor"></div>
+
+    <script type="text/javascript">
+      app.load();
+      app.resize();
+    </script>
+
+    <!-- <div id="ad">
+       <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script> 
+      <!-- jsoneditoronline_160x600 
+      <ins class="adsbygoogle"
+           style="display:inline-block;width:160px;height:600px"
+           data-ad-client="ca-pub-7938810169574141"
+           data-ad-slot="4671869937"></ins>
+      <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </div>-->
   </div>
+</div>
+
+<div id="footer">
+  <div id="footer-inner">
+    <a href="https://github.com/josdejong/jsoneditor/" target="_blank" class="footer">Sourcecode</a>
+  </div>
+</div>
+
+<script type="text/javascript">
+ app.resize();
+</script>
+
+<script type="text/javascript" src="asset/jsonlint/jsonlint.js"></script>
+
 </body>
 </html>
